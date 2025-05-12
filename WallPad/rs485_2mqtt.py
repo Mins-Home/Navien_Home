@@ -83,7 +83,7 @@ class Wallpad:
 
     def listen(self):
         self.register_mqtt_discovery()
-        self.mqtt_client.subscribe([(topic, 2) for topic in [ROOT_TOPIC_NAME + '/dev/raw'] + self.get_topic_list_to_listen()])
+        self.mqtt_client.subscribe([(topic, 2) for topic in [ROOT_TOPIC_NAME + '/recv'] + self.get_topic_list_to_listen()])
         self.mqtt_client.loop_forever()
 
     def register_mqtt_discovery(self):
@@ -125,7 +125,7 @@ class Wallpad:
             return False
 
     def on_raw_message(self, client, userdata, msg):
-        if msg.topic == ROOT_TOPIC_NAME + '/dev/raw': # ew11이 MQTT에 rs485 패킷을 publish하는 경우
+        if msg.topic == ROOT_TOPIC_NAME + '/recv': # ew11이 MQTT에 rs485 패킷을 publish하는 경우
             for payload_raw_bytes in msg.payload.split(b'\xf7')[1:]: # payload 내에 여러 메시지가 있는 경우, \f7 disappear as delimiter here
                 payload_hexstring = 'f7' + payload_raw_bytes.hex() # 'f7361f810f000001000017179817981717969896de22'
                 try:
@@ -137,19 +137,19 @@ class Wallpad:
                     else:
                         continue
                 except Exception as e:
-                    client.publish(ROOT_TOPIC_NAME + '/dev/error', payload_hexstring, qos = 1, retain = True)
+                    client.publish(ROOT_TOPIC_NAME + '/error', payload_hexstring, qos = 1, retain = True)
 
         else: # homeassistant에서 명령하여 MQTT topic을 publish하는 경우
             topic_split = msg.topic.split('/') # rs485_2mqtt/light/침실등/power/set
             device = self.get_device(device_name = topic_split[2])
             payload = device.get_command_payload_byte(topic_split[3], msg.payload.decode())
-            client.publish(ROOT_TOPIC_NAME + '/dev/command', payload, qos = 2, retain = False)
+            client.publish(ROOT_TOPIC_NAME + '/send', payload, qos = 2, retain = False)
 
     def on_disconnect(self, client, userdata, rc):
         raise ConnectionError
 
 MQTT_SERVER = '192.168.219.152'
-ROOT_TOPIC_NAME = 'rs485_2mqtt'
+ROOT_TOPIC_NAME = 'ew11'
 HOMEASSISTANT_ROOT_TOPIC_NAME = 'homeassistant'
 wallpad = Wallpad()
 
