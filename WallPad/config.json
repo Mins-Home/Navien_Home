@@ -10,7 +10,7 @@
     "amd64",
     "i386"
   ],
-  "url": "https://github.com/JeongTaehun/addons",
+  "url": "https://github.com/Mins-Home/Navien_Home",
   "startup": "application",
   "boot": "auto",
   "uart": true,
@@ -22,23 +22,23 @@
       "type": "Serial"
     },
     "Socket": {
-      "server": "192.168.x.x",
+      "server": "192.168.219.135",
       "port": 8899
     },
     "SocketDevice": {
-      "device": "kocom"
+      "device": "navien"
     },
     "Serial": {
       "port1": "/dev/ttyUSB0"
     },
     "SerialDevice": {
-      "port1": "kocom"
+      "port1": "navien"
     },
     "MQTT": {
       "anonymous": false,
-      "server": "192.168.0.252",
-      "username": "taehun.jeong",
-      "password": "Xognsdlahs1!"
+      "server": "192.168.219.152",
+      "username": "mks5546",
+      "password": "Xmfkwp#!00"
     },
     "Wallpad": {
       "light": false,
